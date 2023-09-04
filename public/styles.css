@@ -1,0 +1,63 @@
+body{
+    background-color: #F9F7F7;
+}
+
+.datebox{
+    background-color: #3F72AF; /* Pastel pink background */
+    color: #DBE2EF; /* Darker text color for contrast */
+    padding: 25px; /* Padding around the content */
+    border-radius: 10px; /* Rounded corners */
+    box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.1); /* Box shadow for a subtle lift effect */
+    max-width: 400px; /* Optional: set a max width */
+    margin: 0 auto; /* Center the box if it has a max-width */
+}
+
+.strikeout{
+    text-decoration: line-through;
+    color: #aaa;
+}
+
+.navbar.nav-bar{
+    background-color: #112D4E;
+}
+
+.navbar.nav-bar .navbar-brand,
+.navbar.nav-bar .nav-link {
+
+    color: #DBE2EF !important;
+}
+
+.button{
+    background-color: #3F72AF;
+    box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.1); /* Box shadow for a subtle lift effect */
+    color: #DBE2EF;
+    min-height: 50px;
+    width: 50px;
+    border-radius: 50%;
+    border-color: transparent;
+    font-size: 30px;
+    border-width: 0;
+    text-align: center;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.button:hover {
+    background-color: #0056b3; /* Darker shade for hover effect */
+}
+
+.nav-link.active, .navbar-toggler{
+    color: #fff !important; /* White text */
+    background-color: #3F72AF !important; /* Bootstrap primary color */
+    border-radius: 5px; /* Optional: rounded corners */
+}
+
+.form{
+    height: 123px;
+    text-align: center;
+}
+
+.list{
+    padding-left: 20px;
+}
+
