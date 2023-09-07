@@ -60,39 +60,10 @@
     </footer>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-HwwvtgBNo3bZJJLYd8oVXjrBZt8cqVSpeBNS5n7C8IVInixGAoxmnlMuBnhbgrkm" crossorigin="anonymous"></script>
     <script>
-			`function toggleStrikeout(checkbox) {
-				const listItem = checkbox.closest('.list-group-item');
-				const checkboxId = checkbox.id;
-				const pageId = document.body.getAttribute('data-page-id');
-				
-				if (checkbox.checked) {
-						listItem.classList.add('strikeout');
-						localStorage.setItem(pageId + '-' + checkboxId, 'checked');
-				} else {
-						listItem.classList.remove('strikeout');
-						localStorage.removeItem(pageId + '-' + checkboxId);
-				}
-			}
-
-			function loadCheckboxStates() {
-				const checkboxes = document.querySelectorAll('.form-check-input');
-				const pageId = document.body.getAttribute('data-page-id');
-
-				checkboxes.forEach(checkbox => {
-					const checkboxId = checkbox.id;
-					if (localStorage.getItem(pageId + '-' + checkboxId) === 'checked'){
-						checkbox.checked = true;
-						checkbox.closest('.list-group-item').classList.add('strikeout');
-					}
-				});
-			}`
-
 			function getYear() {
 				const date = new Date();
 				return date.getFullYear();
 			}
-      document.getElementById("footerYear").textContent += getYear();
-			window.onload = loadCheckboxStates;
     </script>
   </body>
 </html>
