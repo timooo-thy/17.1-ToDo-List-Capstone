@@ -33,14 +33,7 @@ app.get('/', (req, res) => {
     const now = new Date();
     const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
     const formattedDateTime = now.toLocaleDateString('en-US', options);
-    const todo = [{
-        name: "Welcome to ToDo Tracker!",
-    },
-    {
-        name: "Login or Register to get started!",
-    }
-    ];
-    res.render('index.ejs', { todolist:todo, currentDateTime: formattedDateTime, error: req.query.logout});
+    res.render('index.ejs', { currentDateTime: formattedDateTime, error: req.query.logout});
 });
 
 // Register endpoint

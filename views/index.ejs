@@ -10,7 +10,7 @@
 </head>
 <body data-page-id="daily">
     <header>
-        <nav class="navbar nav-bar navbar-expand-lg">
+        <nav class="navbar nav-bar navbar-expand-lg" data-bs-theme="dark">
             <div class="container-fluid my-2">
               <a class="navbar-brand mx-4" aria-current="page" href="/"><h1>ToDo Tracker</h1></a>
               <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
@@ -48,9 +48,16 @@
                     <% if(locals.todolist){%>
                         <% for(let i = 0; i < todolist.length; i++) { %>
                             <li class="list-group-item d-flex justify-content-center align-items-center py-5">
-                                <span class="list "><%= todolist[i].name %></span>
+                                <span class="list"><%= todolist[i].name %></span>
                             </li>
                         <% } %>
+                    <% } else { %>
+                      <li class="list-group-item d-flex justify-content-center align-items-center py-5">
+                        <span class="list">Welcome to ToDo Tracker!</span>
+                      </li>
+                      <li class="list-group-item d-flex justify-content-center align-items-center py-5">
+                        <span class="list"><a href="/login">Login</a> or <a href="/register">Register</a> to get started!</span>
+                      </li>
                     <% } %>
                     </li>
                 </ul>
