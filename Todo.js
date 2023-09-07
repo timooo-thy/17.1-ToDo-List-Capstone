@@ -2,11 +2,12 @@ import mongoose from "mongoose";
 
 const Schema = mongoose.Schema;
 
-const todoSchema = new Schema({
+const todoSchema = new mongoose.Schema({
     name: String,
-    type: String
+    type: String,
+    user: { type: mongoose.Schema.Types.ObjectId, ref: 'User' }  // Associate each todo with a user
 });
 
-const Todo = mongoose.model("Todo", todoSchema);
+const TodoModel = mongoose.model("Todo", todoSchema);
 
-export default Todo;
+export default TodoModel;

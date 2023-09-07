@@ -1,14 +1,25 @@
 import express from 'express';
 import mongoose from 'mongoose';
-import Todo from './Todo.js';
+import TodoModel from './Todo.js';
+import UserModel from './User.js';
 import { config } from 'dotenv';
+import bcrypt from "bcrypt";
+import { generateToken } from './jwtHelper.js';
+import session from 'express-session';
+
 const app = express();
 config();
 
 app.use(express.static('public'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(session({
+    secret: process.env.SESSION_SECRET,
+    resave: false,
+    saveUninitialized: false,
+}));
 
+// Home endpoint
 app.get('/', (req, res) => {
     const now = new Date();
     const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
@@ -17,79 +28,152 @@ app.get('/', (req, res) => {
         name: "Welcome to ToDo Tracker!",
     },
     {
-        name: "Navigate to the respective list!",
+        name: "Login or Register to get started!",
     }
     ];
-    res.render('index.ejs', { todolist:todo, currentDateTime: formattedDateTime });
+    res.render('index.ejs', { todolist:todo, currentDateTime: formattedDateTime, error: req.query.logout});
 });
 
-app.get('/daily', async (req, res) => {
+// Register endpoint
+app.get('/register', (req, res) => {
+    res.render("register.ejs", { error: req.query.error });
+});
+
+// Login endpoint
+app.get("/login", (req, res) => {
+    res.render("login.ejs", { error: req.query.error });
+});
+
+// Register endpoint
+app.post("/register", async (req, res) => {
+    try {
+        // Check if user already exists
+        const existingUser = await UserModel.findOne({ email: req.body.email});
+        if (existingUser) {
+            return res.redirect("/register?error=Email already exist.");
+        }
+        // Hash the password
+        const hashedPassword = await bcrypt.hash(req.body.password, 10);
+
+        const newUser = new UserModel({
+            email: req.body.email,
+            password: hashedPassword,
+        });
+
+        const createdUser = await newUser.save();
+        req.session.userId = createdUser._id;
+        res.redirect("/daily");
+    } catch (error) {
+        return res.redirect("/register?error=Error registering.");
+    }
+});
+
+// Login endpoint
+app.post("/login", async (req, res) => {
+    try {
+        console.log(req.body);
+        const user = await UserModel.findOne({ email: req.body.email });
+
+        if (!user) {
+            return res.redirect("/login?error=Invalid email or password.");
+        }
+
+        const validPassword = await bcrypt.compare(req.body.password, user.password);
+
+        if (!validPassword) {
+            return res.redirect("/login?error=Invalid email or password.");
+        }
+
+        req.session.userId = user._id;
+
+        const token = generateToken(user._id.toString());
+        res.cookie("token", token, { httpOnly: true });
+        res.redirect("/daily");
+    } catch (error) {
+        return res.redirect("/login?error=Error logging in.");
+    }
+});
+
+// Logout endpoint
+app.get('/logout', (req, res) => {
+    req.session.destroy(err => {
+        if (err) {
+            console.log(err);
+            return res.redirect('/');
+        }
+
+        res.clearCookie('connect.sid');
+        return res.redirect("/?logout=Logout Successfully.")
+    });
+});
+
+// List endpoint
+app.get('/:list', async (req, res) => {
     const now = new Date();
     const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
     const formattedDateTime = now.toLocaleDateString('en-US', options);
-    try{
-        const todos = await Todo.find({ type: "daily" });
-        res.render('daily.ejs', { todolist: todos, currentDateTime: formattedDateTime });
-    } catch (error) {
-        res.status(500).send("An error occurred.");
+    if(req.params.list === "daily") {
+        try{
+            const todos = await TodoModel.find({ type: "daily", user: req.session.userId });
+            res.render('daily.ejs', { todolist: todos, currentDateTime: formattedDateTime, error: req.query.error });
+        } catch (error) {
+            res.redirect('/daily?error=An error occurred getting your daily list.');
+        }
+    } else if(req.params.list === "work") {
+        try{
+            const todos = await TodoModel.find({ type: "work", user: req.session.userId });
+            res.render('work.ejs', { todolist: todos, currentDateTime: formattedDateTime, error: req.query.error });
+        } catch (error) {
+            res.redirect('/work?error=An error occurred getting your work list.');
+        }
     }
 });
 
-app.get('/work', async (req, res) => {
-    const now = new Date();
-    const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-    const formattedDateTime = now.toLocaleDateString('en-US', options);
-    try{
-        const todos = await Todo.find({ type: "work" });
-        res.render('work.ejs', { todolist: todos, currentDateTime: formattedDateTime });
-    } catch (error) {
-        res.status(500).send("An error occurred.");
+// List submit endpoint
+app.post('/:list/submit', (req, res) => {
+    if(req.params.list === "daily") {
+        try {
+            const todo = new TodoModel({
+                name: req.body.todo,
+                type: "daily",
+                user: req.session.userId  // Set the user field to the logged-in user's ID
+            });
+            todo.save();
+            res.redirect('/daily');
+        } catch (error) {
+            res.redirect('/daily?error=An error occurred while adding the task.');
+        }
+    } else if(req.params.list === "work") {
+        try {
+            const todo = new TodoModel({
+                name: req.body.todo,
+                type: "work",
+                user: req.session.userId  // Set the user field to the logged-in user's ID
+            });
+            todo.save();
+            res.redirect('/work');
+        } catch (error) {
+            res.redirect('/work?error=An error occurred while adding the task.');
+        }
     }
 });
 
-app.post('/daily/submit', (req, res) => {
-    try {
-        const todo = new Todo({
-            name: req.body.todo,
-            type: "daily"
-        });
-        todo.save();
-        res.redirect('/daily');
-    } catch (error) {
-        console.error("Error:", error);
-        res.status(500).send("An error occurred.");
-    }
-});
-
-app.post('/work/submit', (req, res) => {
-    try {
-        const todo = new Todo({
-            name: req.body.todo,
-            type: "work"
-        });
-        todo.save();
-        res.redirect('/work');
-    } catch (error) {
-        console.error("Error:", error);
-        res.status(500).send("An error occurred.");
-    }
-});
-
-app.post('/daily/delete', async (req, res) => {
-    try{
-        const response = await Todo.deleteOne({ _id: req.body.checkbox });
-        res.redirect('/daily');
-    } catch (error) {
-        res.status(500).send("An error occurred.");
-    }
-});
-
-app.post('/work/delete', async (req, res) => {
-    try{
-        const response = await Todo.deleteOne({ _id: req.body.checkbox });
-        res.redirect('/work');
-    } catch (error) {
-        res.status(500).send("An error occurred.");
+// List delete endpoint
+app.post('/:list/delete', async (req, res) => {
+    if(req.params.list === "daily") {
+        try{
+            const response = await TodoModel.deleteOne({ _id: req.body.checkbox });
+            res.redirect('/daily');
+        } catch (error) {
+            res.redirect('/daily?error=An error occurred while adding the task.');
+        }
+    } else if(req.params.list === "work") {
+        try{
+            const response = await TodoModel.deleteOne({ _id: req.body.checkbox });
+            res.redirect('/work');
+        } catch (error) {
+            res.redirect('/work?error=An error occurred while adding the task.');
+        }
     }
 });
 
