@@ -40,6 +40,10 @@ body{
     text-align: center;
     cursor: pointer;
     transition: background-color 0.3s;
+    display: flex;
+    justify-content: center; 
+    align-items: center;
+    box-sizing: border-box;
 }
 
 .button:hover {
