@@ -40,7 +40,7 @@ npm install
 ```
 Start the server using 
 ```bash
-node index.js
+node app.js
 ```
 Open a browser and navigate to http://localhost:3000 to access the application.
 
