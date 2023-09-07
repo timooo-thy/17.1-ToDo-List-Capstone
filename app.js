@@ -19,6 +19,15 @@ app.use(session({
     saveUninitialized: false,
 }));
 
+function isAuthenticated(req, res, next) {
+    if (req.session.userId) {
+        // User is authenticated, proceed to the next middleware or route handler
+        return next();
+    }
+    // User is not authenticated, redirect them to the login page
+    res.redirect('/login?error=You must be logged in to view this page.');
+}
+
 // Home endpoint
 app.get('/', (req, res) => {
     const now = new Date();
@@ -108,7 +117,7 @@ app.get('/logout', (req, res) => {
 });
 
 // List endpoint
-app.get('/:list', async (req, res) => {
+app.get('/:list', isAuthenticated, async (req, res) => {
     const now = new Date();
     const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
     const formattedDateTime = now.toLocaleDateString('en-US', options);
@@ -130,7 +139,7 @@ app.get('/:list', async (req, res) => {
 });
 
 // List submit endpoint
-app.post('/:list/submit', (req, res) => {
+app.post('/:list/submit', isAuthenticated, (req, res) => {
     if(req.params.list === "daily") {
         try {
             const todo = new TodoModel({
@@ -159,7 +168,7 @@ app.post('/:list/submit', (req, res) => {
 });
 
 // List delete endpoint
-app.post('/:list/delete', async (req, res) => {
+app.post('/:list/delete', isAuthenticated, async (req, res) => {
     if(req.params.list === "daily") {
         try{
             const response = await TodoModel.deleteOne({ _id: req.body.checkbox });
