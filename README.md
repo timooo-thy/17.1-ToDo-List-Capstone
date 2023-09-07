@@ -17,7 +17,7 @@ Date Display: The current date is displayed at the top of the application, provi
 
 ## Tech Stack
 
-Backend: The application is built using Express.js.
+Backend: The application is built using Node.js and Express.js.
 
 Frontend: The user interface is designed using Bootstrap and custom CSS. EJS is used as the templating engine.
 
