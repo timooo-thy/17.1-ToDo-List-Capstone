@@ -13,8 +13,14 @@ app.get('/', (req, res) => {
     const now = new Date();
     const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
     const formattedDateTime = now.toLocaleDateString('en-US', options);
-    
-    res.render('index.ejs', { currentDateTime: formattedDateTime });
+    const todo = [{
+        name: "Welcome to ToDo Tracker!",
+    },
+    {
+        name: "Navigate to the respective list!",
+    }
+    ];
+    res.render('index.ejs', { todolist:todo, currentDateTime: formattedDateTime });
 });
 
 app.get('/daily', async (req, res) => {
@@ -23,7 +29,7 @@ app.get('/daily', async (req, res) => {
     const formattedDateTime = now.toLocaleDateString('en-US', options);
     try{
         const todos = await Todo.find({ type: "daily" });
-        res.render('index.ejs', { todolist: todos, currentDateTime: formattedDateTime });
+        res.render('daily.ejs', { todolist: todos, currentDateTime: formattedDateTime });
     } catch (error) {
         res.status(500).send("An error occurred.");
     }
