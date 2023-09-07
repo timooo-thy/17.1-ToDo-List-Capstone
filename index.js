@@ -1,9 +1,10 @@
 import express from 'express';
 import mongoose from 'mongoose';
 import Todo from './Todo.js';
-
+import { config } from 'dotenv';
 const app = express();
 const port = 3000;
+config();
 
 app.use(express.static('public'));
 app.use(express.json());
@@ -87,7 +88,7 @@ app.post('/work/delete', async (req, res) => {
     }
 });
 
-mongoose.connect("mongodb+srv://admin:admin@udemy.77odntv.mongodb.net/?retryWrites=true&w=majority").then(() => {
+mongoose.connect(process.env.MONGO_URL).then(() => {
     console.log(`Connected to database on port ${port}`);
     app.listen(port);
 });
