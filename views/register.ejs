@@ -1,62 +1,67 @@
 <!doctype html>
 <html lang="en">
-  <head>
+<head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Register</title>
+    <meta name="description" content="Register with ToDo Tracker to start managing your daily and work tasks efficiently in one place. Join us now and streamline your productivity.">
+    <title>Register | ToDo Tracker</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-4bw+/aepP/YC94hEpVNVgiZdgIC5+VKNBQNGCHeKRQN+PtmoHDEXuppvnDJzQIu9" crossorigin="anonymous">
     <link href="/styles.css" rel="stylesheet">
-  </head>
-  <body data-page-id="daily">
-    <nav class="navbar nav-bar navbar-expand-lg">
-        <div class="container-fluid my-2">
-          <a class="navbar-brand mx-4" href="/">ToDo Tracker</a>
-          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-          </button>
-          <div class="collapse navbar-collapse" id="navbarSupportedContent">
-            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-              <li class="nav-item mx-4">
-                <a class="nav-link ps-2" aria-current="page" href="/login">Login</a>
-              </li>
-              <li class="nav-item mx-4">
-                <a class="nav-link ps-2 active" href="/register">Register</a>
-              </li>
-            </ul>
+</head>
+<body data-page-id="register">
+    <header>
+        <nav class="navbar nav-bar navbar-expand-lg">
+            <div class="container-fluid my-2">
+              <a class="navbar-brand mx-4" href="/"><h1>ToDo Tracker</h1></a>
+              <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+              </button>
+              <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                  <li class="nav-item mx-4">
+                    <a class="nav-link ps-2" aria-current="page" href="/login">Login</a>
+                  </li>
+                  <li class="nav-item mx-4">
+                    <a class="nav-link ps-2 active" href="/register">Register</a>
+                  </li>
+                </ul>
+              </div>
+            </div>
+        </nav>
+    </header>
+    
+    <main>
+        <% if (locals.error) { %>
+          <div class="alert alert-danger" role="alert">
+              <%= error %>
           </div>
-        </div>
-    </nav>
-    
-    <% if (locals.error) { %>
-      <div class="alert alert-danger" role="alert">
-          <%= error %>
-      </div>
-    <% } %>
-    
-    <div class="container mt-5">
-        <div class="row justify-content-center">
-            <div class="col-lg-6 col-md-8 col-sm-10 col-12">
-                <div class="card">
-                    <div class="card-body">
-                        <h5 class="card-title text-center">Register</h5>
-                        <form action="/register" method="POST">
-                            <div class="mb-3">
-                                <label for="email" class="form-label">Email Address</label>
-                                <input type="email" class="form-control" id="email" name="email" required>
-                            </div>
-                            <div class="mb-3">
-                                <label for="password" class="form-label">Password</label>
-                                <input type="password" class="form-control" id="password" name="password" required>
-                            </div>
-                            <div class="d-grid gap-2">
-                                <button type="submit" class="btn btn-primary">Register</button>
-                            </div>
-                        </form>
+        <% } %>
+
+        <section class="container mt-5">
+            <div class="row justify-content-center">
+                <div class="col-lg-6 col-md-8 col-sm-10 col-12">
+                    <div class="card">
+                        <div class="card-body">
+                            <h2 class="card-title text-center">Register</h2>
+                            <form action="/register" method="POST">
+                                <div class="mb-3">
+                                    <label for="email" class="form-label">Email Address</label>
+                                    <input type="email" class="form-control" id="email" name="email" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="password" class="form-label">Password</label>
+                                    <input type="password" class="form-control" id="password" name="password" required>
+                                </div>
+                                <div class="d-grid gap-2">
+                                    <button type="submit" class="btn btn-primary">Register</button>
+                                </div>
+                            </form>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
-    </div>
+        </section>
+    </main>
 
     <footer class="mt-5 text-center">
       <p id="footerYear">©Timothy Lee | <span id="currentYear"></span></p>
@@ -64,11 +69,11 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-HwwvtgBNo3bZJJLYd8oVXjrBZt8cqVSpeBNS5n7C8IVInixGAoxmnlMuBnhbgrkm" crossorigin="anonymous"></script>
     <script>
-			function getYear() {
-				const date = new Date();
-				document.getElementById("currentYear").innerText = date.getFullYear();
-			}
-      getYear();
+        function getYear() {
+            const date = new Date();
+            document.getElementById("currentYear").innerText = date.getFullYear();
+        }
+        getYear();
     </script>
-  </body>
+</body>
 </html>

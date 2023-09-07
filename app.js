@@ -1,7 +1,7 @@
 import express from 'express';
 import mongoose from 'mongoose';
 import TodoModel from './models/Todo.js';
-import UserModel from './User.js';
+import UserModel from './models/User.js';
 import { config } from 'dotenv';
 import bcrypt from "bcrypt";
 import { generateToken } from './middleware/jwtHelper.js';
