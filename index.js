@@ -1,9 +1,9 @@
 import express from 'express';
+import mongoose from 'mongoose';
+import Todo from './Todo.js';
 
 const app = express();
 const port = 3000;
-const todolist = [];
-const worklist = [];
 
 app.use(express.static('public'));
 app.use(express.json());
@@ -17,31 +17,38 @@ app.get('/', (req, res) => {
     res.render('index.ejs', { currentDateTime: formattedDateTime });
 });
 
-app.get('/daily', (req, res) => {
+app.get('/daily', async (req, res) => {
     const now = new Date();
     const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
     const formattedDateTime = now.toLocaleDateString('en-US', options);
-    
-    res.render('index.ejs', { todolist: todolist, currentDateTime: formattedDateTime });
+    try{
+        const todos = await Todo.find({ type: "daily" });
+        res.render('index.ejs', { todolist: todos, currentDateTime: formattedDateTime });
+    } catch (error) {
+        res.status(500).send("An error occurred.");
+    }
 });
 
-app.get('/work', (req, res) => {
+app.get('/work', async (req, res) => {
     const now = new Date();
     const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
     const formattedDateTime = now.toLocaleDateString('en-US', options);
-    
-    res.render('work.ejs', { todolist: worklist, currentDateTime: formattedDateTime });
+    try{
+        const todos = await Todo.find({ type: "work" });
+        res.render('work.ejs', { todolist: todos, currentDateTime: formattedDateTime });
+    } catch (error) {
+        res.status(500).send("An error occurred.");
+    }
 });
 
 app.post('/daily/submit', (req, res) => {
-    const now = new Date();
-    const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-    const formattedDateTime = now.toLocaleDateString('en-US', options);
-
     try {
-        const todo = req.body.todo;
-        todolist.push(todo);
-        res.render('index.ejs', { todolist: todolist, currentDateTime: formattedDateTime });
+        const todo = new Todo({
+            name: req.body.todo,
+            type: "daily"
+        });
+        todo.save();
+        res.redirect('/daily');
     } catch (error) {
         console.error("Error:", error);
         res.status(500).send("An error occurred.");
@@ -49,20 +56,38 @@ app.post('/daily/submit', (req, res) => {
 });
 
 app.post('/work/submit', (req, res) => {
-    const now = new Date();
-    const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-    const formattedDateTime = now.toLocaleDateString('en-US', options);
-
     try {
-        const todo = req.body.todo;
-        worklist.push(todo);
-        res.render('work.ejs', { todolist: worklist, currentDateTime: formattedDateTime });
+        const todo = new Todo({
+            name: req.body.todo,
+            type: "work"
+        });
+        todo.save();
+        res.redirect('/work');
     } catch (error) {
         console.error("Error:", error);
         res.status(500).send("An error occurred.");
     }
 });
 
-app.listen(port, () => {
-    console.log(`App listening at http://localhost:${port}`);
+app.post('/daily/delete', async (req, res) => {
+    try{
+        const response = await Todo.deleteOne({ _id: req.body.checkbox });
+        res.redirect('/daily');
+    } catch (error) {
+        res.status(500).send("An error occurred.");
+    }
+});
+
+app.post('/work/delete', async (req, res) => {
+    try{
+        const response = await Todo.deleteOne({ _id: req.body.checkbox });
+        res.redirect('/work');
+    } catch (error) {
+        res.status(500).send("An error occurred.");
+    }
+});
+
+mongoose.connect("mongodb+srv://admin:admin@udemy.77odntv.mongodb.net/?retryWrites=true&w=majority").then(() => {
+    console.log(`Connected to database on port ${port}`);
+    app.listen(port);
 });
