@@ -3,7 +3,6 @@ import mongoose from 'mongoose';
 import Todo from './Todo.js';
 import { config } from 'dotenv';
 const app = express();
-const port = 3000;
 config();
 
 app.use(express.static('public'));
@@ -87,6 +86,11 @@ app.post('/work/delete', async (req, res) => {
         res.status(500).send("An error occurred.");
     }
 });
+
+let port = process.env.PORT;
+if(port == null || port == "") {
+    port = 3000;
+}
 
 mongoose.connect(process.env.MONGO_URL).then(() => {
     console.log(`Connected to database on port ${port}`);
