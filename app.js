@@ -1,10 +1,10 @@
 import express from 'express';
 import mongoose from 'mongoose';
-import TodoModel from './Todo.js';
+import TodoModel from './models/Todo.js';
 import UserModel from './User.js';
 import { config } from 'dotenv';
 import bcrypt from "bcrypt";
-import { generateToken } from './jwtHelper.js';
+import { generateToken } from './middleware/jwtHelper.js';
 import session from 'express-session';
 
 const app = express();
